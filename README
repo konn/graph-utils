@@ -1,0 +1,18 @@
+= Requirements
+parsec >= 3.0, fgl
+
+= INSTALL
+$ cabal configure
+$ cabal build
+$ cabal install
+
+= Usage
+> {-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
+> import Data.Graph.Inductive
+> import Data.Graph.EasyGrapher
+> import Data.Graph.Quote
+> import Data.Graph.PageRank
+> 
+> main = print $ pageRanks 
+>           [$gr| D1 -> D2, D1 -> D3, D1 -> D4, D2->D3, D2->D5, D3-> D4, D4->D1, D5 -> D3]
+>        print [$gr| a -> b, b -> 1, 1 -> c |]
