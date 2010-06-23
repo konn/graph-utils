@@ -51,7 +51,7 @@ Library
   Exposed-modules:     EasyGrapher, PageRank, Quote
   
   -- Packages needed in order to build this package.
-  -- Build-depends:       
+  Build-depends: base >= 4.0, syb, mtl, containers, fgl, parsec >= 3.0, template-haskell
   
   -- Modules not exported by this package.
   -- Other-modules:       
