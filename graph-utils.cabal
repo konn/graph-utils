@@ -10,7 +10,7 @@ Name:                graph-utils
 Version:             0.1
 
 -- A short (one-line) description of the package.
-Synopsis:            A simple wrapper of Data.Graph.Inductive.
+Synopsis:            A simple wrapper for Data.Graph.Inductive (fgl).
 
 -- A longer description of the package.
 -- Description:         
@@ -48,10 +48,10 @@ Cabal-version:       >=1.2
 
 Library
   -- Modules exported by the library.
-  Exposed-modules:     EasyGrapher, PageRank, Quote
+  Exposed-modules:     Data.Graph.EasyGrapher, Data.Graph.PageRank, Data.Graph.Quote
   
   -- Packages needed in order to build this package.
-  Build-depends: base >= 4.0, syb, mtl, containers, fgl, parsec >= 3.0, template-haskell
+  Build-depends: base >= 4.0, parsec >= 3.0, syb, template-haskell, mtl, containers, fgl
   
   -- Modules not exported by this package.
   -- Other-modules:       
