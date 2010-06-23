@@ -1,4 +1,4 @@
-module Data.Graph.PageRank (pageRanks) where
+module Data.Graph.PageRank (pageRanks, RankDic(..)) where
 import Control.Monad.RWS
 import Data.Graph.Inductive
 import Prelude hiding (map, lookup)
