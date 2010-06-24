@@ -1,5 +1,5 @@
 {-# LANGUAGE NamedFieldPuns, StandaloneDeriving, DeriveDataTypeable, TypeSynonymInstances #-}
-module EasyGrapher (EGGraph(..), EGTerm(..), buildGraph) where
+module Data.Graph.EasyGrapher.EasyGrapher (EGGraph(..), EGTerm(..), buildGraph, fromGr) where
 import Data.Graph.Inductive hiding(empty)
 import qualified Data.Graph.Inductive as G
 import Control.Monad
@@ -10,8 +10,9 @@ import Data.Maybe
 import Prelude hiding (lookup)
 import Data.Generics
 import qualified Data.Graph as DG
+import Data.List (sort)
 
-data (Eq a, Ord a) => EGTerm a = a :=> a | EGVertex a deriving (Show, Eq, Typeable)
+data (Eq a, Ord a) => EGTerm a = a :=> a | EGVertex a deriving (Show, Eq, Typeable, Ord)
 deriving instance (Data a, Ord a)=>Data (EGTerm a)
 type EGGraph a = [EGTerm a]
 
@@ -44,3 +45,7 @@ toNode lab = do
       (nd:_) <- gets (newNodes 1 . graph)
       env@Env{graph, dic} <- get
       put $ env{graph=insNode (nd, lab) graph, dic=insert lab nd dic}
+
+fromGr :: (Graph gr, Ord a) => gr a () -> EGGraph a
+fromGr gr = sort $ map (uncurry (:=>).(\(a,b)->(toL a, toL b))) $ edges gr
+  where toL = fromJust . lab gr 
