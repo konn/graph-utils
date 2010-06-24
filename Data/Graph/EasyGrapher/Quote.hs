@@ -4,7 +4,7 @@ import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 import Text.Parsec hiding ((<|>), many, State, label)
 import Control.Applicative
-import EasyGrapher
+import Data.Graph.EasyGrapher.EasyGrapher
 import Data.Generics
 import Data.List
 
