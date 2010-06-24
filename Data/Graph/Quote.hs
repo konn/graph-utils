@@ -26,7 +26,8 @@ lexeme :: Parsec String u a -> Parsec String u a
 lexeme p = p <* spaces
 graphs :: Parsec String () (EGGraph String)
 graphs = try(sepBy1 edge (symbol ","))
-edge = (:=>) <$> (ident <* symbol "->") <*> ident
+term = try edge | EGVert <$> ident
+edge = (:=>) <$> (ident<* symbol "->") <*> ident
 ident = lexeme $ many1 alphaNum
 
 gr :: QuasiQuoter
