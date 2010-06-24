@@ -12,7 +12,6 @@ $ cabal install
 
 > import Data.Graph.Inductive
 > import Data.Graph.EasyGrapher
-> import Data.Graph.Quote
 > import Data.Graph.PageRank
 > 
 > main = do

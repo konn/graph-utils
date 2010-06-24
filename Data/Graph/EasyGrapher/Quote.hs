@@ -5,6 +5,7 @@ import Language.Haskell.TH.Quote
 import Text.Parsec hiding ((<|>), many, State)
 import Control.Applicative
 import Data.Graph.EasyGrapher.EasyGrapher
+import Data.Generic
 
 parseGraph :: (Monad m) => (String, Int, Int) -> String -> m (EGGraph String)
 parseGraph (file, line, col) src = 
@@ -24,14 +25,20 @@ parseGraph (file, line, col) src =
 symbol s = lexeme $ string s
 lexeme :: Parsec String u a -> Parsec String u a
 lexeme p = p <* spaces
-graphs :: Parsec String () (EGGraph String)
+
+graphs :: Parsec String () (EGGraph a)
 graphs = sepEndBy1 term (symbol ",")
 term = try edge <|> EGVertex <$> ident
 edge = (:=>) <$> (ident<* symbol "->") <*> ident
 ident = lexeme $ many1 alphaNum
 
+gread = read `extQ` (id :: String -> String)
+
 gr :: QuasiQuoter
 gr = QuasiQuoter quoteGraphExp quoteGraphPat
+
+fromGr :: (Graph gr) => gr a () -> EGGraph
+fromGr = map (uncurry (:=>)) . edges
 
 quoteGraphExp :: String -> ExpQ
 quoteGraphExp src = do
@@ -45,4 +52,4 @@ quoteGraphPat src = do
   loc <- location
   let pos=(loc_filename loc, fst $ loc_start loc, snd $ loc_start loc)
   gr <- parseGraph pos src
-  dataToPatQ (const Nothing) gr
+  dataToPatQ (const Nothing) $ fromGr gr
