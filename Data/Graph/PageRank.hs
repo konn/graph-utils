@@ -10,6 +10,8 @@ map :: (Functor f) => (a -> b) -> f a -> f b
 map = fmap
 
 data Env = Env {node :: [Node], from :: Map Node [Node], outdegrees :: Map Node Int}
+
+-- |'RankDic' is the Map for holding PageRank data.
 type RankDic = Map Node Double 
 type PRMachine = RWS Env () RankDic
 
@@ -25,6 +27,7 @@ froms = lookupEnv from
 currentRank :: Node -> PRMachine Double
 currentRank nd = gets (fromJust.lookup nd)
 
+-- |'pageRanks' calculate the PageRank for each node in the Graph 'gr'
 pageRanks :: (Graph gr) => gr a b -> Double -> Double -> RankDic
 pageRanks gr epsilon error = fst $ execRWS steps Env{node=nds, from=froms, outdegrees=outdegs} initRanks
     where nds = nodes gr

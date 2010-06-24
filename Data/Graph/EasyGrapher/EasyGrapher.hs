@@ -12,8 +12,11 @@ import Data.Generics
 import qualified Data.Graph as DG
 import Data.List (sort)
 
+-- |'EGTerm' is a vertex & an edge.
 data (Eq a, Ord a) => EGTerm a = a :=> a | EGVertex a deriving (Show, Eq, Typeable, Ord)
 deriving instance (Data a, Ord a)=>Data (EGTerm a)
+
+-- |'EGGraph a' is a list of 'EGTerm a'.
 type EGGraph a = [EGTerm a]
 
 data Env gr a = Env{graph :: gr a (), dic :: Map a Node}
@@ -22,8 +25,9 @@ empty = Env{graph = G.empty, dic = M.empty}
 
 type GrMachine gr lab a = State (Env gr lab) a
 
+-- |'buildGraph' converts EGGraph 'gr' into the '(gr a ())'
 buildGraph :: (DynGraph gr, Ord a) => EGGraph a -> gr a ()
-buildGraph xs = evalState (build xs) empty
+buildGraph gr = evalState (build gr) empty
 
 build :: (Ord lab, DynGraph gr) => EGGraph lab -> GrMachine gr lab (gr lab ())
 build [] = gets graph 
@@ -46,6 +50,7 @@ toNode lab = do
       env@Env{graph, dic} <- get
       put $ env{graph=insNode (nd, lab) graph, dic=insert lab nd dic}
 
+-- |'fromGr' converts 'gr :: (gr a ())' into 'EGGraph a'
 fromGr :: (Graph gr, Ord a) => gr a () -> EGGraph a
 fromGr gr = sort $ map (uncurry (:=>).(\(a,b)->(toL a, toL b))) $ edges gr
   where toL = fromJust . lab gr 

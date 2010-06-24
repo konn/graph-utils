@@ -36,7 +36,7 @@ label = var <|> (Str <$> ident)
 var = Antiquote <$> (symbol "'" *> ident)
 ident = lexeme $ many1 alphaNum
 
--- * Quasi quoter
+-- | Quasi quoter for EGGraph
 gr :: QuasiQuoter
 gr = QuasiQuoter quoteGraphExp quoteGraphPat
 
