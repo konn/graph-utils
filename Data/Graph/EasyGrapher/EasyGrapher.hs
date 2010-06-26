@@ -1,5 +1,5 @@
 {-# LANGUAGE NamedFieldPuns, StandaloneDeriving, DeriveDataTypeable, TypeSynonymInstances #-}
-module Data.EasyGrapher.EasyGrapher (EGGraph(..), EGTerm(..), buildGraph, fromGr) where
+module Data.Graph.EasyGrapher.EasyGrapher (EGGraph(..), EGTerm(..), buildGraph, fromGr) where
 import Data.Graph.Inductive hiding(empty)
 import qualified Data.Graph.Inductive as G
 import Control.Monad
