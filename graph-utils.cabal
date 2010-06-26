@@ -1,6 +1,6 @@
 Name:                graph-utils
 
-Version:             0.3.6
+Version:             0.3.5.1
 
 -- A short (one-line) description of the package.
 Synopsis:            A simple wrapper & quasi quoter for fgl.
@@ -46,7 +46,7 @@ Library
   Exposed-modules:  Data.Graph.EasyGrapher, Data.Graph.PageRank
   
   -- Packages needed in order to build this package.
-  Build-depends: base >=2 && < 4 , fgl, mtl, containers, template-haskell, parsec>=3.0 && < 4
+  Build-depends: base >=2 && < 4 , fgl, mtl, containers, template-haskell, parsec >=3.0 && < 4
   
   -- Modules not exported by this package.
   -- Other-modules:       

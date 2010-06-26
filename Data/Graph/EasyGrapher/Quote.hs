@@ -1,11 +1,11 @@
 {-# LANGUAGE  TemplateHaskell, NamedFieldPuns, TupleSections, DeriveDataTypeable,
               NoMonomorphismRestriction  #-}
-module Quote  where
+module Data.EasyGrapher.Quote  where
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 import Text.Parsec hiding ((<|>), many, State, label)
 import Control.Applicative
-import EasyGrapher
+import Data.EasyGrapher
 import Data.Generics
 import Data.List
 
