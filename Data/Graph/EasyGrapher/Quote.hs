@@ -1,15 +1,17 @@
-{-# LANGUAGE TemplateHaskell, NamedFieldPuns, TupleSections, DeriveDataTypeable  #-}
-module Data.Graph.EasyGrapher.Quote (gr) where
+{-# LANGUAGE  TemplateHaskell, NamedFieldPuns, TupleSections, DeriveDataTypeable,
+              NoMonomorphismRestriction  #-}
+module Quote  where
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 import Text.Parsec hiding ((<|>), many, State, label)
 import Control.Applicative
-import Data.Graph.EasyGrapher.EasyGrapher
+import EasyGrapher
 import Data.Generics
 import Data.List
 
 -- * Graph Parser
-parseGraph :: (Monad m) => (String, Int, Int) -> String -> m (EGGraph Value)
+parseGraph :: (Monad m, Data a, Typeable a, Read a, Ord a)
+           => (String, Int, Int) -> String -> m (EGGraph (Antiquote a))
 parseGraph (file, line, col) src = 
   case (parse p "" src) of
     Left err -> fail $ show err
@@ -24,7 +26,7 @@ parseGraph (file, line, col) src =
         pos
       spaces *> lexeme(graphs)
 
-data Value = Str String | Antiquote String deriving (Typeable, Data, Ord, Eq, Show)
+data (Data a) => Antiquote a = Val a | Var String deriving (Typeable, Data, Ord, Eq, Show)
 
 -- * Parser Combinators
 symbol s = lexeme $ string s
@@ -32,10 +34,14 @@ lexeme p = p <* spaces
 graphs = sepEndBy1 term (symbol ",")
 term = try edge <|> EGVertex <$> label
 edge = (:=>) <$> (label<* symbol "->") <*> label
-label = var <|> (Str <$> ident)
-var = Antiquote <$> (symbol "'" *> ident)
+label = var <|> (Val <$> deserialize <$> ident)
+var = Var <$> (symbol "'" *> ident)
 ident = lexeme $ many1 alphaNum
 
+deserialize :: (Data a, Typeable a, Read a) => String -> a
+deserialize = read `extR` (id :: String -> String) 
+
+{-
 -- | Quasi quoter for EGGraph
 gr :: QuasiQuoter
 gr = QuasiQuoter quoteGraphExp quoteGraphPat
@@ -47,9 +53,9 @@ quoteGraphExp src = do
   gr <- parseGraph pos src
   appE (varE 'buildGraph) $ dataToExpQ (const Nothing `extQ` antiStrExp) gr
 
-antiStrExp :: Value -> Maybe ExpQ
-antiStrExp (Antiquote sym) = Just $ varE (mkName sym)
-antiStrExp (Str s) = Just $ litE $ stringL s
+antiStrExp :: (Data a) => Antiquote a -> Maybe ExpQ
+antiStrExp (Var sym) = Just $ varE (mkName sym)
+antiStrExp (Val a) = Just $ dataToExpQ (const Nothing) a
 antiStrExp _ = Nothing
 
 quoteGraphPat :: String -> PatQ
@@ -59,7 +65,8 @@ quoteGraphPat src = do
   gr <- parseGraph pos src
   dataToPatQ (const Nothing `extQ` antiStrPat) (sort gr)
 
-antiStrPat :: Value -> Maybe PatQ
-antiStrPat (Antiquote sym) = Just $ varP (mkName sym)
-antiStrPat (Str s) = Just $ litP $ stringL s
+antiStrPat :: (Data a) => Antiquote a -> Maybe PatQ
+antiStrPat (Var sym) = Just $ varP (mkName sym)
+antiStrPat (Val a) = Just $ dataToPatQ (const Nothing) a
 antiStrPat _ = Nothing
+-}
