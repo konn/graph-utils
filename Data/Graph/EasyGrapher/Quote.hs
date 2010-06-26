@@ -1,6 +1,6 @@
 {-# LANGUAGE  TemplateHaskell, NamedFieldPuns, TupleSections, DeriveDataTypeable,
               NoMonomorphismRestriction  #-}
-module Data.Graph.EasyGrapher.Quote  where
+module Data.Graph.EasyGrapher.Quote (gr) where
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
 import Text.Parsec hiding ((<|>), many, State, label)
