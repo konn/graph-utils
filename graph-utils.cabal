@@ -1,6 +1,6 @@
 Name:                graph-utils
 
-Version:             0.3.5.1
+Version:             0.3.5.2
 
 -- A short (one-line) description of the package.
 Synopsis:            A simple wrapper & quasi quoter for fgl.
@@ -38,15 +38,23 @@ Build-type:          Simple
 -- Extra-source-files:  
 
 -- Constraint on the version of Cabal needed to build this package.
-Cabal-version:       >=1.2
+Cabal-version:       >=1.6
 
+source-repository head
+  type: git
+  location: http://github.com/konn/graph-utils/tree/master
+
+source-repository this
+  type: git
+  location: http://github.com/konn/graph-utils/tree/release
+  tag: rel-0.3.5.2
 
 Library
   -- Modules exported by the library.
   Exposed-modules:  Data.Graph.EasyGrapher, Data.Graph.PageRank
   
   -- Packages needed in order to build this package.
-  Build-depends: base >=4, fgl, mtl, containers, template-haskell, parsec==3.*, syb 
+  Build-depends: base == 4.*, fgl, mtl, containers, template-haskell, parsec==3.*, syb 
   
   -- Modules not exported by this package.
   -- Other-modules:       
