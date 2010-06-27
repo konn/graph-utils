@@ -10,8 +10,7 @@ import Data.Generics
 import Data.List
 
 -- * Graph Parser
-parseGraph :: (Monad m, Data a, Typeable a, Read a, Ord a)
-           => (String, Int, Int) -> String -> m (EGGraph (Antiquote a))
+parseGraph :: (Monad m) => (String, Int, Int) -> String -> m (EGGraph Value)
 parseGraph (file, line, col) src = 
   case (parse p "" src) of
     Left err -> fail $ show err
@@ -26,7 +25,7 @@ parseGraph (file, line, col) src =
         pos
       spaces *> lexeme(graphs)
 
-data (Data a) => Antiquote a = Val a | Var String deriving (Typeable, Data, Ord, Eq, Show)
+data Value = Val String | Var String deriving (Typeable, Data, Ord, Eq, Show)
 
 -- * Parser Combinators
 symbol s = lexeme $ string s
@@ -41,7 +40,7 @@ ident = lexeme $ many1 alphaNum
 deserialize :: (Data a, Typeable a, Read a) => String -> a
 deserialize = read `extR` (id :: String -> String) 
 
-{-
+
 -- | Quasi quoter for EGGraph
 gr :: QuasiQuoter
 gr = QuasiQuoter quoteGraphExp quoteGraphPat
@@ -53,9 +52,9 @@ quoteGraphExp src = do
   gr <- parseGraph pos src
   appE (varE 'buildGraph) $ dataToExpQ (const Nothing `extQ` antiStrExp) gr
 
-antiStrExp :: (Data a) => Antiquote a -> Maybe ExpQ
+antiStrExp :: Value -> Maybe ExpQ
 antiStrExp (Var sym) = Just $ varE (mkName sym)
-antiStrExp (Val a) = Just $ dataToExpQ (const Nothing) a
+antiStrExp (Val a) = Just $ litE $ stringL a
 antiStrExp _ = Nothing
 
 quoteGraphPat :: String -> PatQ
@@ -65,8 +64,7 @@ quoteGraphPat src = do
   gr <- parseGraph pos src
   dataToPatQ (const Nothing `extQ` antiStrPat) (sort gr)
 
-antiStrPat :: (Data a) => Antiquote a -> Maybe PatQ
+antiStrPat :: Value -> Maybe PatQ
 antiStrPat (Var sym) = Just $ varP (mkName sym)
-antiStrPat (Val a) = Just $ dataToPatQ (const Nothing) a
+antiStrPat (Val a) = Just $ litP $ stringL a
 antiStrPat _ = Nothing
--}
