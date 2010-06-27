@@ -1,8 +1,8 @@
 module Data.Graph.PageRank (pageRanks, RankDic(..)) where
-import Control.Monad.RWS
+import Control.Monad.RWS (RWS(..), asks, gets, execRWS, get, put)
 import Data.Graph.Inductive
 import Prelude hiding (map, lookup)
-import Data.Map hiding (map)
+import Data.Map (Map, lookup, fromList, foldWithKey, findWithDefault)
 import Data.Maybe (fromJust)
 import Control.Monad
 

@@ -6,7 +6,7 @@ import Language.Haskell.TH.Quote
 import Text.Parsec hiding ((<|>), many, State, label)
 import Control.Applicative
 import Data.Graph.EasyGrapher.EasyGrapher
-import Data.Generics
+import Data.Generics (Data, Typeable, extR, extQ)
 import Data.List
 
 -- * Graph Parser

@@ -1,14 +1,17 @@
 {-# LANGUAGE NamedFieldPuns, StandaloneDeriving, DeriveDataTypeable, TypeSynonymInstances #-}
 module Data.Graph.EasyGrapher.EasyGrapher (EGGraph(..), EGTerm(..), buildGraph, fromGr) where
-import Data.Graph.Inductive hiding(empty)
+import Data.Graph.Inductive (
+        insNode, insEdge, Gr(..), DynGraph(..), Graph, Node(..),
+        Edge(..), newNodes, edges, lab
+      )
 import qualified Data.Graph.Inductive as G
 import Control.Monad
-import Data.Map hiding (map, empty)
+import Data.Map (Map, notMember, lookup, insert)
 import qualified Data.Map as M
-import Control.Monad.State 
+import Control.Monad.State (gets, State(..), evalState, get, put)
 import Data.Maybe
 import Prelude hiding (lookup)
-import Data.Generics
+import Data.Generics (Typeable, Data)
 import qualified Data.Graph as DG
 import Data.List (sort)
 

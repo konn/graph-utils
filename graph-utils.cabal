@@ -1,5 +1,5 @@
 Name:                graph-utils
-Version:             0.3.6
+Version:             0.3.6.1
 
 Synopsis:            A simple wrapper & quasi quoter for fgl.
 Description:
@@ -26,10 +26,10 @@ source-repository head
 source-repository this
   type: git
   location: http://github.com/konn/graph-utils/tree/release
-  tag: rel-0.3.6
+  tag: rel-0.3.7
 
 Library
   Exposed-modules:     Data.Graph.EasyGrapher, Data.Graph.PageRank
-  Build-depends:     base == 4.*, fgl, mtl, containers, template-haskell, parsec==3.*, syb 
+  Build-depends:     base == 4.*, fgl >= 5.3 && < 5.5, mtl >= 1.0, containers >= 0.1, template-haskell >= 2.3 , parsec==3.*, syb >= 0.1
   Other-modules:        Data.Graph.EasyGrapher.EasyGrapher, Data.Graph.EasyGrapher.Quote
   
