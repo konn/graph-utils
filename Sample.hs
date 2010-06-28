@@ -34,6 +34,28 @@ leftOfSingleton :: (Ord a) => (Gr a ()) -> Maybe a
 leftOfSingleton (fromGr -> [$gr| 'x -> 'y |]) = Just x
 leftOfSingleton _ = Nothing
 
+-- |Version 0.3.7 features
+
+-- Polymorphism Support (Only for Expression Quasi Quotations)
+-- You can create (Read a, Data a) => (Gr a ()) using Quasi Quotations!
+pgr1 :: Gr Int ()
+pgr1 = [$gr| 12 -> 23, 23 -> 34, 4, 23 -> 56, 56 -> 12 |]
+
+-- Supported literal notation (for String & Char at this time)
+pgr2 :: Gr Char ()
+pgr2 = [$gr| 'a' -> 'b', 'c' -> 'd', 'f' |]
+pgr3 :: Gr String ()
+pgr3 = [$gr| "hoge" -> "bar", "foo bar baz" -> "bar" |]
+-- You can omit ' or " if the value of literal doesn't contain whitespace.
+pgr2' :: Gr Char ()
+pgr2' = [$gr| a -> b, c -> 'd', f |]
+pgr3' :: Gr String ()
+pgr3' = [$gr| hoge -> bar, "foo bar baz" -> bar |]
+
+-- Group notation
+pgr4 :: Gr (Maybe Int) ()
+pgr4 = [$gr| (Just 3) -> Nothing, (Just 2) -> (Just 3) |] 
+
 main = do
   putStr "This is the graph converted from standard EGGraph form."
   print graph1

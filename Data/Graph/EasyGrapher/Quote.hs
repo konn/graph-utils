@@ -1,9 +1,8 @@
 {-# LANGUAGE  TemplateHaskell, NamedFieldPuns, TupleSections, DeriveDataTypeable,
               NoMonomorphismRestriction  #-}
-module Data.Graph.EasyGrapher.Quote (gr) where
+module Data.Graph.EasyGrapher.Quote (gr, deserialize) where
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
-import qualified Language.Haskell.TH.Syntax as S
 import Text.Parsec hiding ((<|>), many, State, label)
 import Control.Applicative
 import Data.Graph.EasyGrapher.EasyGrapher
@@ -23,7 +22,7 @@ parseGraph (file, line, col) src = do
         (flip setSourceLine) line $
         (flip setSourceColumn) col $
         pos
-      spaces *> lexeme(graphs)
+      spaces *> lexeme(graphs) <* eof
 
 data Value = Val String | Var String deriving (Typeable, Data, Ord, Eq, Show)
 
@@ -33,15 +32,21 @@ lexeme p = p <* spaces
 graphs = sepEndBy1 term (symbol ",")
 term = try edge <|> EGVertex <$> label
 edge = (:=>) <$> (label<* symbol "->") <*> label
-label = var <|> (Val <$> deserialize <$> ident)
+label = (Val <$> ident) <|> try (Val <$> lit) <|> var
+lit = between (symbol "\"") (symbol "\"") (many $ noneOf "\"")
+  <|> show <$> between (symbol "\'") (symbol "\'") (noneOf "'")
+  <|> between (symbol "(") (symbol ")") (many $ noneOf ")")
 var = Var <$> (symbol "'" *> ident)
 ident = lexeme $ many1 alphaNum
 
+-- |Wrap function for read (specialized for String & Char)
 deserialize :: (Data a, Read a) => String -> a
-deserialize = read `extR` (id :: String -> String) 
+deserialize = read `extR` (id :: String -> String) `extR` chShow
+  where
+    chShow [x] = x
+    chShow x = read x
 
-
--- | Quasi quoter for EGGraph
+-- | Quasi quoter for 'EGGraph'
 gr :: QuasiQuoter
 gr = QuasiQuoter quoteGraphExp quoteGraphPat
 
