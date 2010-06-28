@@ -3,6 +3,7 @@
 module Data.Graph.EasyGrapher.Quote (gr) where
 import Language.Haskell.TH
 import Language.Haskell.TH.Quote
+import qualified Language.Haskell.TH.Syntax as S
 import Text.Parsec hiding ((<|>), many, State, label)
 import Control.Applicative
 import Data.Graph.EasyGrapher.EasyGrapher
@@ -11,10 +12,9 @@ import Data.List
 
 -- * Graph Parser
 parseGraph :: (Monad m) => (String, Int, Int) -> String -> m (EGGraph Value)
-parseGraph (file, line, col) src = 
-  case (parse p "" src) of
-    Left err -> fail $ show err
-    Right gr -> return gr
+parseGraph (file, line, col) src = do
+  ans <- runParserT p () "" src
+  either (fail.show) return ans
   where
     p = do
       pos <- getPosition
@@ -37,7 +37,7 @@ label = var <|> (Val <$> deserialize <$> ident)
 var = Var <$> (symbol "'" *> ident)
 ident = lexeme $ many1 alphaNum
 
-deserialize :: (Data a, Typeable a, Read a) => String -> a
+deserialize :: (Data a, Read a) => String -> a
 deserialize = read `extR` (id :: String -> String) 
 
 
@@ -54,8 +54,7 @@ quoteGraphExp src = do
 
 antiStrExp :: Value -> Maybe ExpQ
 antiStrExp (Var sym) = Just $ varE (mkName sym)
-antiStrExp (Val a) = Just $ litE $ stringL a
-antiStrExp _ = Nothing
+antiStrExp (Val a)   = Just $ appE (varE 'deserialize) $ litE $ stringL a
 
 quoteGraphPat :: String -> PatQ
 quoteGraphPat src = do
@@ -67,4 +66,3 @@ quoteGraphPat src = do
 antiStrPat :: Value -> Maybe PatQ
 antiStrPat (Var sym) = Just $ varP (mkName sym)
 antiStrPat (Val a) = Just $ litP $ stringL a
-antiStrPat _ = Nothing
